@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ScrollToTop from '../componet/scrollToTop.js';
-import { Auth } from '../componet/auth.js';
+
 import { Navbar } from '../componet/navbar.js';
 import { Footer } from '../componet/footer.js';
 import { Home } from '../pages/home.js';
@@ -15,7 +15,7 @@ const Layout = () => {
       <BrowserRouter basename={basename}>
         <ScrollToTop />
         <Navbar />
-        <Auth />
+   
         <Routes>
           <Route path="/" element={<Home />} />
           {/* <Route path="/demo" element={<Demo />} />
