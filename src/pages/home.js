@@ -149,6 +149,7 @@ export const Home = () => {
                             <th>Miles per change </th>
                             <th>Miles under/overdue</th>
                             <th>Last change date</th>
+                            <th>Days between changes</th>
                             <th>Days until/overdue</th>
                         </tr>
                     </thead>
@@ -170,13 +171,14 @@ export const Home = () => {
                                     )}
                                     </td>
                                     <td>{car.lastOilChangeDate}</td>
+                                    <td>{car.maintIntervalInDays}</td>
                                     <td>{car.daysUntilChange > 0 ? (
                                             <div style={{ color: "green" }}>
-                                                Days Until Oil Change: {car.daysUntilChange} days
+                                                 {car.daysUntilChange} days
                                             </div>
                                         ) : (
                                             <div style={{ color: "red" }}>
-                                                Days Overdue for Oil Change: {car.daysOverdue} days
+                                                {car.daysOverdue} days
                                             </div>
                                         )}
                                     </td>
