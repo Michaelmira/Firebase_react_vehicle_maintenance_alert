@@ -3,13 +3,14 @@ import { useEffect, useState } from 'react';
 import { Timestamp } from "firebase/firestore";
 import { Auth } from '../componet/auth.js';
 import { db } from '../config/firebase.js';
-import { getDocs, collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
+import { getDocs, collection, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 
 
 
 export const Home = () => {
     const [carList, setCarList] = useState([]);
 
+    // New Car States
     const [make, setMake] = useState("")
     const [model, setModel] = useState("")
     const [mileage, setMileage] = useState(0)
@@ -18,6 +19,9 @@ export const Home = () => {
     const [lastOilChangeDate, setLastOilChangeDate] = useState()
     const [maintIntervalInDays, setMaintIntervalInDays] = useState("")
     const [isDueForMaint, setIsDueForMaint] = useState(false)
+    
+    // Edit Car State
+    const [ editMileage, setEditMileage ] = useState(0)
 
     const carsCollectionRef = collection(db, "Cars")
 
@@ -88,9 +92,16 @@ export const Home = () => {
     }
 
     const deleteCar = async (id) => {
-        const carDoc = doc(db, "Cars", id )
+        const carDoc = doc(db, "Cars", id)
         await deleteDoc(carDoc)
         getCarList()
+    }
+
+    const updateMileage = async (id) => {
+        const carDoc = doc(db, "Cars", id);
+        await updateDoc(carDoc, {mileage: editMileage })
+        getCarList()
+
     }
 
     return (
@@ -165,7 +176,19 @@ export const Home = () => {
                             <>
                                 <tr>
                                     <td>{`${car.make} ${car.model}`}</td>
-                                    <td>{car.mileage}</td>
+                                    <td>
+                                        <div>
+                                            <div>
+                                                {car.mileage}
+                                            </div>
+                                            <div>
+                                                <input 
+                                                placeholder="New Mileage..."
+                                                onChange={((e) => setEditMileage(Number(e.target.value)))}
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
                                     <td>{car.maintMileageInterval.toLocaleString()}</td>
                                     <td>{car.milesUntilChange > 0 ? (
                                         <div style={{ color: "green" }}>
@@ -180,18 +203,18 @@ export const Home = () => {
                                     <td>{car.lastOilChangeDate}</td>
                                     <td>{car.maintIntervalInDays}</td>
                                     <td>{car.daysUntilChange > 0 ? (
-                                            <div style={{ color: "green" }}>
-                                                 {car.daysUntilChange} days
-                                            </div>
-                                        ) : (
-                                            <div style={{ color: "red" }}>
-                                                {car.daysOverdue} days
-                                            </div>
-                                        )}
+                                        <div style={{ color: "green" }}>
+                                            {car.daysUntilChange} days
+                                        </div>
+                                    ) : (
+                                        <div style={{ color: "red" }}>
+                                            {car.daysOverdue} days
+                                        </div>
+                                    )}
                                     </td>
                                     <td>
                                         <div className="d-flex justify-content-between">
-                                            <button className="border-0 bg-white">
+                                            <button onClick={() => updateMileage(car.id)} className="border-0 bg-white">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </button>
                                             <button onClick={() => deleteCar(car.id)} className="border-0 bg-white">
