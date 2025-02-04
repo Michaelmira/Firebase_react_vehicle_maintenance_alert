@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Timestamp } from "firebase/firestore";
 import { Auth } from '../componet/auth.js';
 import { db } from '../config/firebase.js';
-import { getDocs, collection, addDoc } from 'firebase/firestore';
+import { getDocs, collection, addDoc, deleteDoc, doc } from 'firebase/firestore';
 
 
 
@@ -87,6 +87,12 @@ export const Home = () => {
         }
     }
 
+    const deleteCar = async (id) => {
+        const carDoc = doc(db, "Cars", id )
+        await deleteDoc(carDoc)
+        getCarList()
+    }
+
     return (
         <div className="text-center mt-5">
             <h1>Hello World Firebase!!</h1>
@@ -151,6 +157,7 @@ export const Home = () => {
                             <th>Last change date</th>
                             <th>Days between changes</th>
                             <th>Days until/overdue</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -182,7 +189,16 @@ export const Home = () => {
                                             </div>
                                         )}
                                     </td>
-                                    <td></td>
+                                    <td>
+                                        <div className="d-flex justify-content-between">
+                                            <button className="border-0 bg-white">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <button onClick={() => deleteCar(car.id)} className="border-0 bg-white">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                             </>
                         ))}
@@ -216,8 +232,6 @@ export const Home = () => {
                                 Days Overdue for Oil Change: {car.daysOverdue} days
                             </h4>
                         )}
-
-
                     </div>
                 ))}
             </div>
