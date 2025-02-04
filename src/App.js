@@ -1,12 +1,10 @@
 import './App.css';
-import { Auth } from './componets/auth.js';
+import Layout from './store/layout';
 
 function App() {
   return (
     <div className="App">
-      <Auth />
-
-      
+      <Layout />
     </div>
   );
 }
