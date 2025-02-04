@@ -6,9 +6,9 @@ export const Home = () => {
 
     return (
     
-        <>
+        <div className="container m-5 p-5 shadow rounded-4 border">
             <Auth />
-        </>
+        </div>
             
             
 

@@ -5,7 +5,7 @@ import ScrollToTop from '../componet/scrollToTop.js';
 import { Navbar } from '../componet/navbar.js';
 import { Footer } from '../componet/footer.js';
 import { Home } from '../pages/home.js';
-import { UserDashboard } from '../pages/userDashboard.js';
+import { UserDashboard } from '../pages/UserDashboard.js';
 
 
 const Layout = () => {

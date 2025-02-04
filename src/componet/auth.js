@@ -42,7 +42,7 @@ export const Auth = () => {
     }
 
     return (
-        <div>
+        <div className="container py-5 shadow rounded-4 border">
             <input
                 placeholder="Email..." 
                 onChange={(e) => setEmail(e.target.value) }
