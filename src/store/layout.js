@@ -5,6 +5,7 @@ import ScrollToTop from '../componet/scrollToTop.js';
 import { Navbar } from '../componet/navbar.js';
 import { Footer } from '../componet/footer.js';
 import { Home } from '../pages/home.js';
+import { UserDashboard } from '../pages/userDashboard.js';
 
 
 const Layout = () => {
@@ -17,7 +18,9 @@ const Layout = () => {
         <Navbar />
    
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route element={<Home />} path="/" />
+          <Route element={<UserDashboard />} path="/user-dashboard"  />
+          
           {/* <Route path="/demo" element={<Demo />} />
           <Route path="/single/:theid" element={<Single />} /> */}
           <Route path="*" element={<h1>Not found!</h1>} />
