@@ -2,8 +2,9 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { Timestamp } from "firebase/firestore";
 import { Auth } from '../componet/auth.js';
-import { db, auth } from '../config/firebase.js';
+import { db, auth, storage } from '../config/firebase.js';
 import { getDocs, collection, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
+import { ref, uploadBytes } from 'firebase/storage';
 
 
 
@@ -19,9 +20,12 @@ export const UserDashboard = () => {
     const [lastOilChangeDate, setLastOilChangeDate] = useState()
     const [maintIntervalInDays, setMaintIntervalInDays] = useState("")
     const [isDueForMaint, setIsDueForMaint] = useState(false)
-    
+
     // Edit Car State
-    const [ editMileage, setEditMileage ] = useState(0)
+    const [editMileage, setEditMileage] = useState(0)
+
+    // File Upload State
+    const [fileUpload, setFileUpload] = useState(null)
 
     const carsCollectionRef = collection(db, "Cars")
 
@@ -57,7 +61,6 @@ export const UserDashboard = () => {
                 return {
                     ...data,
                     id: doc.id,
-                    userId: auth?.currentUser.uid,
                     lastOilChangeDate: lastOilChangeDate.toLocaleDateString(),
                     milesUntilChange,
                     milesPastDue,
@@ -84,7 +87,8 @@ export const UserDashboard = () => {
                 maintMileageInterval: maintMileageInterval,
                 lastOilChangeDate: Timestamp.fromDate(new Date(lastOilChangeDate)),
                 maintIntervalInDays: maintIntervalInDays,
-                isDueForMaint: isDueForMaint
+                isDueForMaint: isDueForMaint,
+                userId: auth?.currentUser.uid,
             })
             getCarList()
         } catch (err) {
@@ -100,16 +104,28 @@ export const UserDashboard = () => {
 
     const updateMileage = async (id) => {
         const carDoc = doc(db, "Cars", id);
-        await updateDoc(carDoc, {mileage: editMileage })
+        await updateDoc(carDoc, { mileage: editMileage })
         getCarList()
+        setEditMileage("")
+    }
+
+    const uploadFile = async () => {
+        if (!fileUpload) return;
+        const filesFolderRef = ref(storage, `projectPictures/${fileUpload.name}`);
+        try {
+            await uploadBytes(filesFolderRef, fileUpload);
+        } catch (err) {
+            console.error(err)
+        }
+
+
+
 
     }
 
     return (
         <div className="text-center mt-5">
             <h1>Hello World Firebase!!</h1>
-
-            <Auth />
             <div>
                 <input
                     placeholder="Make..."
@@ -174,63 +190,67 @@ export const UserDashboard = () => {
                     </thead>
                     <tbody>
                         {carList.map((car) => (
-                            <>
-                                <tr>
-                                    <td>{`${car.make} ${car.model}`}</td>
-                                    <td>
+                            <tr key={car.id}>
+                                <td>{`${car.make} ${car.model}`}</td>
+                                <td>
+                                    <div>
                                         <div>
-                                            <div>
-                                                {car.mileage}
-                                            </div>
-                                            <div>
-                                                <input 
+                                            {car.mileage}
+                                        </div>
+                                        <div>
+                                            <input
                                                 placeholder="New Mileage..."
                                                 onChange={((e) => setEditMileage(Number(e.target.value)))}
-                                                />
-                                            </div>
+                                            />
                                         </div>
-                                    </td>
-                                    <td>{car.maintMileageInterval.toLocaleString()}</td>
-                                    <td>{car.milesUntilChange > 0 ? (
-                                        <div style={{ color: "green" }}>
-                                            {car.milesUntilChange.toLocaleString()} miles
-                                        </div>
-                                    ) : (
-                                        <div style={{ color: "red" }}>
-                                            {car.milesPastDue.toLocaleString()} miles
-                                        </div>
-                                    )}
-                                    </td>
-                                    <td>{car.lastOilChangeDate}</td>
-                                    <td>{car.maintIntervalInDays}</td>
-                                    <td>{car.daysUntilChange > 0 ? (
-                                        <div style={{ color: "green" }}>
-                                            {car.daysUntilChange} days
-                                        </div>
-                                    ) : (
-                                        <div style={{ color: "red" }}>
-                                            {car.daysOverdue} days
-                                        </div>
-                                    )}
-                                    </td>
-                                    <td>
-                                        <div className="d-flex justify-content-between">
-                                            <button onClick={() => updateMileage(car.id)} className="border-0 bg-white">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </button>
-                                            <button onClick={() => deleteCar(car.id)} className="border-0 bg-white">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </>
+                                    </div>
+                                </td>
+                                <td>{car.maintMileageInterval.toLocaleString()}</td>
+                                <td>{car.milesUntilChange > 0 ? (
+                                    <div style={{ color: "green" }}>
+                                        {car.milesUntilChange.toLocaleString()} miles
+                                    </div>
+                                ) : (
+                                    <div style={{ color: "red" }}>
+                                        {car.milesPastDue.toLocaleString()} miles
+                                    </div>
+                                )}
+                                </td>
+                                <td>{car.lastOilChangeDate}</td>
+                                <td>{car.maintIntervalInDays}</td>
+                                <td>{car.daysUntilChange > 0 ? (
+                                    <div style={{ color: "green" }}>
+                                        {car.daysUntilChange} days
+                                    </div>
+                                ) : (
+                                    <div style={{ color: "red" }}>
+                                        {car.daysOverdue} days
+                                    </div>
+                                )}
+                                </td>
+                                <td>
+                                    <div className="d-flex justify-content-between">
+                                        <button onClick={() => updateMileage(car.id)} className="border-0 bg-white">
+                                            <i className="fas fa-pencil-alt"></i>
+                                        </button>
+                                        <button onClick={() => deleteCar(car.id)} className="border-0 bg-white">
+                                            <i className="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         ))}
 
                     </tbody>
                 </table>
             </div>
             <div>
+                <input type="file" onChange={(e) => setFileUpload(e.target.files[0])} />
+                <button onClick={uploadFile}> Upload File </button>
+
+            </div>
+
+            {/* <div>
                 {carList.map((car) => (
                     <div className="container d-flex justify-content-between">
                         <h4 style={{ color: car.isDueForMaint ? "green" : "red" }}>{`${car.make} ${car.model}`}</h4>
@@ -258,7 +278,7 @@ export const UserDashboard = () => {
                         )}
                     </div>
                 ))}
-            </div>
+            </div> */}
 
         </div>
     );

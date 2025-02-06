@@ -5,7 +5,8 @@ import ScrollToTop from '../componet/scrollToTop.js';
 import { Navbar } from '../componet/navbar.js';
 import { Footer } from '../componet/footer.js';
 import { Home } from '../pages/home.js';
-import { UserDashboard } from '../pages/UserDashboard.js';
+import { UserDashboard } from '../pages/userDashboard.js';
+import { ProtectedRoute } from '../componet/ProtectedRoute.js';
 
 
 const Layout = () => {
@@ -19,7 +20,12 @@ const Layout = () => {
    
         <Routes>
           <Route element={<Home />} path="/" />
-          <Route element={<UserDashboard />} path="/user-dashboard"  />
+
+          <Route element={
+            <ProtectedRoute>
+              <UserDashboard />
+            </ProtectedRoute>
+            } path="/user-dashboard"  />
           
           {/* <Route path="/demo" element={<Demo />} />
           <Route path="/single/:theid" element={<Single />} /> */}
