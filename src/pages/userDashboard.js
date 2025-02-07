@@ -1,7 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { Timestamp } from "firebase/firestore";
-import { Auth } from '../componet/auth.js';
 import { db, auth, storage } from '../config/firebase.js';
 import { getDocs, collection, addDoc, deleteDoc, updateDoc, doc } from 'firebase/firestore';
 import { ref, uploadBytes } from 'firebase/storage';
