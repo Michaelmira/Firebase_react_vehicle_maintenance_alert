@@ -30,7 +30,7 @@ export const UserDashboard = () => {
 
     useEffect(() => {
         getCarList()
-    }, [getCarList])
+    }, [])
 
     const getCarList = async () => {
         try {
