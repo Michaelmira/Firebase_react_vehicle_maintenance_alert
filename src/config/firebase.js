@@ -20,3 +20,5 @@ export const googleProvider = new GoogleAuthProvider();
 
 export const db = getFirestore(app)
 export const storage = getStorage(app)
+
+console.log("API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
